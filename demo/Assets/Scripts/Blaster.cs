@@ -10,7 +10,6 @@ public class Blaster : MonoBehaviour
     [SerializeField][Range(0f, 5f)] float coolDownTime = 5f;
     [SerializeField] float forceSpeed = 100f;
     [SerializeField] float dampeningFactor = 0.95f;
-    [SerializeField] float damage = 10f;
 
     private float forceInput;
     private float coolDown;
@@ -49,16 +48,12 @@ public class Blaster : MonoBehaviour
 
             foreach (Transform muzzle in muzzles)
             {
-                RaycastHit Objective;
-                if (Physics.Raycast(muzzle.position, muzzle.forward, out Objective))
-                {
-                    HealthBar healthBar = Objective.collider.GetComponent<HealthBar>();
-                    if (healthBar != null)
-                    {
-                        float damageAmount = forceInput * forceSpeed * damage * Objective.distance;
-                        healthBar.TakeDamage(damageAmount);
-                    }
-                }
+                GameObject projectile = Instantiate(projectilePrefab, muzzle.position, muzzle.rotation);
+                Rigidbody projectileRigidbody = projectile.GetComponent<Rigidbody>();
+                float fire = forceInput * forceSpeed;
+                Vector3 force = transform.forward * fire;
+                projectileRigidbody.AddForce(force, ForceMode.Impulse);
+                Destroy(projectile, 3f);
             }
         }
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class ShipControl : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class ShipControl : MonoBehaviour
     [SerializeField] float thrustSpeed = 100f;
     [SerializeField] float pitchSpeed = 60f;
     [SerializeField] float rollSpeed = 60f;
+    [SerializeField] Slider healthBar; // reference to the health slider
+    [SerializeField] float maxHealth = 10000f; // new variable for max health
+    float health; // new variable for current health
 
     Rigidbody rigidbody;
 
@@ -23,6 +27,9 @@ public class ShipControl : MonoBehaviour
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
+        health = maxHealth; // initialize current health to max health
+        healthBar.maxValue = maxHealth; // set the max value of the health slider
+        healthBar.value = health; // set the initial value of the health slider
     }
 
     void Update()
@@ -67,7 +74,20 @@ public class ShipControl : MonoBehaviour
         Vector3 rotation = new Vector3(0f, 0f, -roll);
         rigidbody.rotation *= Quaternion.Euler(rotation);
     }
+
+    // new function to reduce health when colliding with another object
+    void OnCollisionEnter(Collision collision)
+    {
+        float damage = Random.Range(0f, 30f);
+        health -= damage;
+        healthBar.value = health; // update the value of the health slider
+        if (health <= 0f)
+        {
+            Destroy(gameObject);
+        }
+    }
 }
+
 
 
 
